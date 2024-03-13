@@ -1,5 +1,5 @@
 ---
-name: 'SARIF File Annotator'
+name: 'Megalinter SARIF'
 description: Annotate SARIF analysis files
 inputs:
   sarif_path:
