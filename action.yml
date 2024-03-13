@@ -1,0 +1,25 @@
+---
+name: 'SARIF File Annotator'
+description: Annotate SARIF analysis files
+inputs:
+  sarif_path:
+    description: sarif analysis file location
+    required: true
+    default: ./results.sarif
+  include:
+    description: list of tool to include in annotation
+    required: false
+    default: null
+  exclude:
+    description: list of tool to exclude in annotation
+    required: false
+    default: null
+  token:
+    type: string
+    description: Github access token
+    required: true
+    default: ${{github.token}}
+
+runs:
+  using: node20
+  main: lib/index.js

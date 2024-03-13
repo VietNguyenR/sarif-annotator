@@ -1,0 +1,48 @@
+---
+# MegaLinter GitHub Action configuration file
+# More info at https://megalinter.io
+name: MegaLinter
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: MegaLinter
+    permissions:
+      actions: write
+      checks: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: MegaLinter
+        id: ml
+        uses: oxsecurity/megalinter@v7.10.0
+        env:
+          EXTENDS: .maga-linter.yml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Annotation
+        if: ${{ success() }} || ${{ failure() }}
+        uses: vietnguyenr/sarif-annotator@1.0.0
+        with:
+          sarif_path: 'megalinter-reports/megalinter-report.sarif'
+      - name: Archive production artifacts
+        if: ${{ success() }} || ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: MegaLinter reports
+          path: |
+            megalinter-reports
+            mega-linter.log
